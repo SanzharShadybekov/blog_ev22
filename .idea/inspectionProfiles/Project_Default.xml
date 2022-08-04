@@ -1,0 +1,66 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyArgumentListInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="decouple" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E131" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="todo_app.models.Task.objects" />
+          <option value="todo_app.models.Task.DoesNotExist" />
+          <option value="blog_api.models.Post.objects" />
+          <option value="blog_api.models.Comment.objects" />
+          <option value="blog_api.models.Category.objects" />
+          <option value="django.db.models.fields.related.ForeignKey.id" />
+          <option value="blog_api.models.PostImages.objects" />
+          <option value="type.with_ui" />
+          <option value="type.without_ui" />
+          <option value="product.models.Product.objects" />
+          <option value="product.models.Post.objects" />
+          <option value="post.models.Post.objects" />
+          <option value="post.models.Comment.objects" />
+          <option value="User.models.CustomUser.DoesNotExist" />
+          <option value="product.models.Product.DoesNotExist" />
+          <option value="post.models.Like.objects" />
+          <option value="post.models.UserPostRelations.objects" />
+          <option value="django_filters.rest_framework.SearchFilter" />
+          <option value="post.models.UserPostRelations.as_views" />
+          <option value="post.views.UserPostRelationView.as_views" />
+          <option value="post.models.Rating.objects" />
+          <option value="book.models.Comment.objects" />
+          <option value="book.models.BookReview.objects" />
+          <option value="chatroom.models.Messages.objects" />
+          <option value="chatroom.models.Chatroom.objects" />
+          <option value="main.models.Product.id" />
+          <option value="main.models.Product.objects" />
+          <option value="main.models.Category.objects" />
+          <option value="main.models.Category.children" />
+          <option value="category.models.Category.objects" />
+          <option value="review.models.Review.objects" />
+          <option value="post.models.Favorite.objects" />
+          <option value="main.models.Picture.objects" />
+          <option value="main.models.Problem.objects" />
+          <option value="main.models.Reply.objects" />
+          <option value="main.models.Comment.objects" />
+          <option value="product.models.Product.object" />
+          <option value="project.models.Group.objects" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
