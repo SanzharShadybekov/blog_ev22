@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-
+from .models import Post
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=6,
@@ -49,3 +49,9 @@ class UserSerializer(serializers.ModelSerializer):
                   'last_name', 'email', 'is_active',
                   'is_staff',)
 
+
+class PostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Post
+        fields = '__all__'
