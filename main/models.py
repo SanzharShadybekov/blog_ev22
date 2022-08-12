@@ -65,3 +65,19 @@ class Comment(models.Model):
     def __str__(self) -> str:
         return f'{self.owner} -> {self.post} -> {self.created_at}'
 
+
+class Like(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='liked')
+
+    class Meta:
+        unique_together = ['post', 'owner']
+
+
+class Favorites(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='favorites')
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='favorites')
+
+    class Meta:
+        unique_together = ['post', 'owner']
+

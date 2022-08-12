@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Category, Post, PostImages, Comment
+from .models import Category, Post, PostImages, Comment, Like, Favorites
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=6,
@@ -42,12 +42,26 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class FavoritesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favorites
+        fields = ('id', 'post')
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name',
-                  'last_name', 'email', 'is_active',
-                  'is_staff',)
+        exclude = ('password',)
+    
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['favorites'] = FavoritesSerializer(instance.favorites.all(), many=True).data
+        return repr
+
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username',)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -82,10 +96,18 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
 
-    # def to_representation(self, instance):
-    #     repr = super().to_representation(instance)
-    #     repr['comments'] = CommentSerializer(instance.comments.all(), many=True).data
-    #     return repr
+    def is_liked(self, post):
+        user = self.context.get('request').user
+        return user.liked.filter(post=post).exists()
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        # repr['comments'] = CommentSerializer(instance.comments.all(), many=True).data
+        user = self.context.get('request').user
+        if user.is_authenticated:
+            repr['is_liked'] = self.is_liked(instance)
+        repr['likes_count'] = instance.likes.count()
+        return repr
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -110,3 +132,10 @@ class PostCreateSerializer(serializers.ModelSerializer):
         return created_post
 
 
+class LikeSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source=
+    'owner.username')
+    
+    class Meta:
+        model = Like
+        fields = ('owner',)
