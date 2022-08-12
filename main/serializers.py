@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Category, Post
+from .models import Category, Post, PostImages, Comment
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=6,
@@ -56,13 +56,36 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class PostImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostImages
+        exclude = ('id',)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'body', 'owner', 'post')
+
+
 class PostSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(
         source='owner.username')
+    category = serializers.ReadOnlyField(
+        source='category.name')
+    images = PostImageSerializer(many=True)
+    comments = CommentSerializer(many=True, read_only=True) #1 способ!
 
     class Meta:
         model = Post
         fields = '__all__'
+
+    # def to_representation(self, instance):
+    #     repr = super().to_representation(instance)
+    #     repr['comments'] = CommentSerializer(instance.comments.all(), many=True).data
+    #     return repr
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -72,7 +95,18 @@ class PostListSerializer(serializers.ModelSerializer):
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
+    images = PostImageSerializer(many=True, read_only=False, required=False)
+
     class Meta:
         model = Post
-        fields = ('title', 'body', 'category', 'preview')
+        fields = ('title', 'body', 'category', 'preview', 'images')
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        created_post = Post.objects.create(**validated_data)
+        images_data = request.FILES
+        images_object = [PostImages(post=created_post, image=image) for image in images_data.getlist('images')]
+        PostImages.objects.bulk_create(images_object)
+        return created_post
+
 
