@@ -45,7 +45,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 class FavoritesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorites
-        fields = ('id', 'post')
+        fields = ('post',)
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['post'] = PostListSerializer(instance.post).data
+        return repr
 
 
 class UserSerializer(serializers.ModelSerializer):
