@@ -1,11 +1,23 @@
+from django.db import connection
 from django.contrib.auth.models import User
-from rest_framework import generics, permissions
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .permissions import IsAuthor, IsAccountOwner
 from . import serializers
 from .models import Category, Post, Comment, Like, Favorites
+
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import generics, permissions
+from rest_framework.filters import SearchFilter
+from rest_framework.pagination import PageNumberPagination
+
+
+class StandartResultsPagination(PageNumberPagination):
+    page_size = 5
+    page_query_param = 'page'
+    max_page_size = 1000
 
 
 class UserRegistrationView(generics.CreateAPIView):
@@ -18,6 +30,8 @@ class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.UserListSerializer
+    filter_backends = (SearchFilter,)
+    search_fields = ('username',)
 
 
 class UserDetailView(generics.RetrieveAPIView):
@@ -32,7 +46,16 @@ class CategoryListView(generics.ListAPIView):
 
 
 class PostViewSet(ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.select_related('owner', 'category',)
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filterset_fields = ('category', 'owner')
+    search_fields = ('title',)
+    pagination_class = StandartResultsPagination
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        print(f'Запросов в базу данных: {len(connection.queries)}')
+        return response
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
